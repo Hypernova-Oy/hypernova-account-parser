@@ -1,5 +1,7 @@
 # hypernova-account-parser
 
+This tool parses accounting documents and exports them in a simple csv format.
+
 # Requirements
 
 * Install `pdftotext` utility
