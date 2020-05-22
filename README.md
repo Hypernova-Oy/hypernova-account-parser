@@ -2,6 +2,8 @@
 
 # Requirements
 
+* Install `pdftotext` utility
+
 `sudo apt-get install poppler-utils`
 
 # Installation
