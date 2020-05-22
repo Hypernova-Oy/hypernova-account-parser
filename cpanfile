@@ -1,1 +1,1 @@
-requires 'Text::CSV', '>= 2.00';
+requires 'Text::CSV::Slurp', '>= 1.03';
