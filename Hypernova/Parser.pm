@@ -1,6 +1,7 @@
 package Hypernova::Parser;
 
-use Modern::Perl;
+use strict;
+use warnings;
 
 use Time::Piece;
 

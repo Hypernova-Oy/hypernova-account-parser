@@ -1,6 +1,7 @@
 package Hypernova::Account;
 
-use Modern::Perl;
+use strict;
+use warnings;
 
 sub new {
     my ( $class, $params ) = @_;
