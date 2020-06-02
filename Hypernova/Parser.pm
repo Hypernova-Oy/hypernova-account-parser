@@ -3,6 +3,7 @@ package Hypernova::Parser;
 use strict;
 use warnings;
 
+use Text::CSV::Slurp;
 use Time::Piece;
 
 use Hypernova::Account;
@@ -25,23 +26,43 @@ sub new {
 
 sub generate_csv {
     my ( $self ) = @_;
-    my $data = '';
 
-    $data .= "Incomes\n";
+    my @data = (
+        @{$self->{data}->{expenses}},
+        @{$self->{data}->{incomes}}
+    );
 
-    foreach my $income ( @{$self->{data}->{incomes}} ) {
-        $data .= $income->{date} . ',' . $income->{amount} . ',' .
-                 $income->{description} . "\n";
-    }
+    my $csv = $self->_generate_csv( \@data );
 
-    $data .= "Expenses\n";
+    return $csv;
+}
 
-    foreach my $expense ( @{$self->{data}->{expenses}} ) {
-        $data .= $expense->{date} . ',' . $expense->{amount} . ',' .
-                 $expense->{description} . "\n";
-    }
+sub generate_expense_csv {
+    my ( $self ) = @_;
 
-    return $data;
+    my $csv = $self->_generate_csv( $self->{data}->{expenses} );
+
+    return $csv;
+}
+
+sub generate_income_csv {
+    my ( $self ) = @_;
+
+    my $csv = $self->_generate_csv( $self->{data}->{incomes} );
+
+    return $csv;
+}
+
+sub _generate_csv {
+    my ( $self, $data ) = @_;
+    
+    my $csv = Text::CSV::Slurp->create(
+        input => $data,
+        field_order => ['type', 'date', 'amount', 'description'],
+        binary => 1
+    );
+
+    return $csv;
 }
 
 sub is_useless_row {
@@ -71,7 +92,7 @@ sub parse_file {
         }
 
         if ( $current_account >= 3000 && $current_account <= 3380 ) {
-            $self->register_sale( $row );
+            $self->register_income( $row );
         } elsif ( $current_account == 6140 || $current_account == 6420
                || $current_account > 20000 ) {
             next;
@@ -99,12 +120,13 @@ sub register_expense {
         date => $date,
         description => $description,
         amount => $amount,
+        type => 'expense'
     };
 
     return 1;
 }
 
-sub register_sale {
+sub register_income {
     my ( $self, $row ) = @_;
 
     my $date = $self->_get_date( $row );
@@ -120,6 +142,7 @@ sub register_sale {
         date => $date,
         description => $description,
         amount => $amount,
+        type => 'income'
     };
 
     return 1;
