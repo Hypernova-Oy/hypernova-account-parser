@@ -92,12 +92,12 @@ sub parse_file {
         }
 
         if ( $current_account >= 3000 && $current_account <= 3380 ) {
-            $self->register_income( $row );
+            $self->register_income( $row, $current_account );
         } elsif ( $current_account == 6140 || $current_account == 6420
                || $current_account > 20000 ) {
             next;
         } elsif ( $current_account >= 4000 ) {
-            $self->register_expense( $row );
+            $self->register_expense( $row, $current_account );
         }
 
         next unless $row;
@@ -105,7 +105,7 @@ sub parse_file {
 }
 
 sub register_expense {
-    my ( $self, $row ) = @_;
+    my ( $self, $row, $account ) = @_;
 
     my $date = $self->_get_date( $row );
     my $description = $self->_get_description( $row );
@@ -117,6 +117,7 @@ sub register_expense {
     }
 
     push @{$self->{data}->{expenses}}, {
+        account => $account,
         date => $date,
         description => $description,
         amount => $amount,
@@ -127,7 +128,7 @@ sub register_expense {
 }
 
 sub register_income {
-    my ( $self, $row ) = @_;
+    my ( $self, $row, $account ) = @_;
 
     my $date = $self->_get_date( $row );
     my $description = $self->_get_description( $row );
@@ -139,6 +140,7 @@ sub register_income {
     }
 
     push @{$self->{data}->{incomes}}, {
+        account => $account,
         date => $date,
         description => $description,
         amount => $amount,
